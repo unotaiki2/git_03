@@ -1,0 +1,38 @@
+services:
+  
+  lesson01_Mysql:
+    build: ./mysql/
+    container_name: "lesson_Mysql"
+    volumes:
+      #- ./mysql/initdb.d:/docker-entrypoint-initdb.d 
+      - ./mysql/db:/var/lib/mysql
+    image: mysqlapp
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysqlpass1234
+      - MYSQL_USER=docker
+      - MYSQL_PASSWORD=mysqlpass1234
+      - TZ='Asia/Tokyo'
+    ports:
+    - 3306:3306
+    networks:
+      lesson01_network:
+        ipv4_address: 192.168.2.8
+  lesson01_django:
+    build: ./django/
+    container_name: 'lesson01_django'
+    restart: always
+    tty: true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./django/dir:/workdir/dir
+    networks:
+      - lesson01_network
+networks:
+  lesson01_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+       - subnet: 192.168.2.0/24
+         gateway: 192.168.2.1
